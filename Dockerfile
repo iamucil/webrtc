@@ -183,15 +183,21 @@ RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg tar \
     && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
     && apk del .build-deps-yarn
 
-ENV GAE_VER=216.0.0 \
-    PATH=/usr/src/google-cloud-sdk/bin:${PATH}
+ENV GAE_VER=1.9.74
+# https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-265.0.0-linux-x86_64.tar.gz
+# 216.0.0
+# RUN wget -O gcs.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GAE_VER}-linux-x86_64.tar.gz; \
+#     tar -xvf gcs.tar.gz -C /usr/src; \
+#     rm -rf gcs.tar.gz; \
+#     /usr/src/google-cloud-sdk/install.sh \
+#     && gcloud components install app-engine-python \
+#     app-engine-python-extras \
+#     cloud-datastore-emulator
 
-RUN wget -O gcs.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GAE_VER}-linux-x86_64.tar.gz; \
-    tar -xvf gcs.tar.gz -C /usr/src; \
-    rm -rf gcs.tar.gz; \
-    /usr/src/google-cloud-sdk/install.sh \
-    && gcloud components install app-engine-python \
-    app-engine-python-extras \
-    cloud-datastore-emulator
+# Google App Engine
+ENV GAE_ZIP google_appengine_$GAE_VER.zip
+RUN wget https://storage.googleapis.com/appengine-sdks/featured/$GAE_ZIP
+RUN unzip $GAE_ZIP -d /usr/local
+ENV PATH $PATH:/usr/local/google_appengine
 
 CMD ["python2"]
